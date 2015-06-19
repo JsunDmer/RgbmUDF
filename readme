@@ -1,0 +1,4 @@
+1：将R的gbm模型导出
+2：利用Python将gbm转换成Java类
+3：将Java类转换成hive的UDF类
+4：形成Java的jar包

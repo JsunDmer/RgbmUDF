@@ -1,0 +1,10 @@
+./build.sh is the command to build the hive udf jar
+
+src contains gbm models and their udf wrappers
+lib contains the output jar to be pushed to hadoop
+
+the build dependency jars are contained in build.jars directory, its content can be refreshed when hadoop cluster is upgraded.
+i.e., i created the current content by running the following bash command on hadoop
+hadoop cli>export HDH=/home/vipshop/platform/hadoop/share/hadoop/common; export HVH=/home/vipshop/platform/hive; tar cvf build_jars.tar $HDH/*.jar $HDH/lib/*.jar $HVH/lib/*.jar
+
+then transfer the build_jars.tar file (baniary mode) to the local build.jars directory with tar xvf 

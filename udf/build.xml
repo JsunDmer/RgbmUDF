@@ -1,0 +1,96 @@
+<?xml version="1.0"?>
+<project name="SessionContainerLoader" basedir="." default="ted-udf">
+
+  <property name="src" value="src" />
+  <property name="classes" value="bin"/>
+  <property name="data" value="data" />
+  <property name="docs" value="docs" />
+  <property name="lib" value="lib" />
+
+  <property environment="env"/>
+
+  <!-- Specify this property with -Dhadoop.home=??? command line flag -->
+  <property name="hadoop.home" value="${env.HADOOP_INSTALL}"/>
+
+  <!-- Specify this property with -Dhive.home=??? command line flag -->
+  <property name="hive.home" value="${env.HIVE_HOME}"/>
+  
+  <!-- the normal classpath -->
+  <path id="classpath">
+    <fileset dir="${hadoop.home}">
+      <include name="**/*.jar" />
+      <exclude name="**/excluded/" />
+    </fileset>
+    <fileset dir="${hadoop.home}/lib">
+      <include name="**/*.jar" />
+      <exclude name="**/excluded/" />
+    </fileset>
+    <fileset dir="${hive.home}/lib">
+      <include name="**/*.jar" />
+      <exclude name="**/excluded/" />
+    </fileset>
+    <fileset dir="${lib}">
+      <include name="**/*.jar" />
+      <exclude name="**/excluded/" />
+    </fileset>
+  </path>
+
+  <!-- ================================================================== -->
+  <!-- Cleanup                                                            -->
+  <!-- ================================================================== -->
+  <target name="clean">
+    <delete failonerror="false" includeemptydirs="true">
+      <fileset dir="${classes}" includes="**/*" />
+    </delete>
+  </target>
+  
+  <!-- ================================================================== -->
+  <!-- Make directories                                                   -->
+  <!-- ================================================================== -->
+  <target name="create" depends="clean">
+    <mkdir dir="${classes}" />
+    <mkdir dir="${docs}" />
+    <mkdir dir="${lib}" />
+  </target>
+
+	<target name="compile" depends="create">
+		<javac source="1.6" target="1.6" destdir="${classes}"  debug="true" debuglevel="lines,vars,source">
+			<src path="${src}" />
+			<classpath refid="classpath" />
+		</javac>
+	</target>
+
+        <target name="ted-udf" depends="compile">
+                <jar destfile="${lib}/GBMHiveUDF_V1.jar">
+                        <fileset dir="${classes}">
+                                <include name="**/utils/*.class" />
+                                <include name="**/hive/*.class" />
+                        </fileset>
+                        <fileset dir=".">
+                                <include name="${data}/*.txt" />
+                        </fileset>
+                </jar>
+        </target>
+
+	<path id="java">
+		<fileset dir="${hadoop.home}">
+			<include name="*.jar" />
+		</fileset>
+		<fileset dir="${hadoop.home}\lib">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+
+  <!-- ================================================================== -->
+  <!-- Create Javadoc                                                     -->
+  <!-- ================================================================== -->
+  <target name="javadoc" depends="create">
+    <javadoc access="public" additionalparam="-J-Xmx512M" author="true" destdir="docs/api" doctitle="eBay BISBinaryConverter" nodeprecated="false" nodeprecatedlist="false" noindex="false" nonavbar="false" notree="false" source="1.6" sourcepath="src" splitindex="true" use="true" version="true" packagenames="com.ebay.hadoop.platform.loader.sessioncontainer">
+      <classpath refid="classpath"/>
+      <link href="http://hadoop.apache.org/common/docs/r0.20.1/api"/>
+      <link href="http://hadoop.apache.org/hive/docs/r0.5.0/api"/>
+      <link href="http://java.sun.com/javase/6/docs/api"/>
+    </javadoc>
+  </target>
+
+</project>
